@@ -4,8 +4,9 @@ import { loadDataFromUrl } from './fileLoaders/loader';
 import { initLoading } from './loading.svelte';
 import { isOnMermaidAI } from './migration/domainMigration';
 import { applyMigrations } from './migrations.svelte';
-import { initURLSubscription, loadState, updateCodeStore, verifyState } from './state.svelte';
+import { initURLSubscription, loadState, updateCode, updateCodeStore, verifyState } from './state.svelte';
 import { getAnalyticsSafeUrl, initAnalytics, plausible } from './stats';
+import { isTauri, listenForFileOpen } from './tauri';
 
 export const getDomain = (url?: string): string => {
   if (!url) return '';
@@ -25,6 +26,15 @@ export const syncDiagram = (): void => {
 
 export const initHandler = async (): Promise<void> => {
   applyMigrations();
+
+  // In Tauri mode, check for file-open events on startup (for file association)
+  if (isTauri()) {
+    // Listen for future file-open events (e.g. opening another .mmd while running)
+    listenForFileOpen((_path, content) => {
+      updateCode(content, { resetPanZoom: true });
+    });
+  }
+
   loadStateFromURL();
   await initLoading('Loading Gist...', loadDataFromUrl().catch(console.error));
   syncDiagram();

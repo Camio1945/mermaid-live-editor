@@ -7,10 +7,12 @@ import devtoolsJson from 'vite-plugin-devtools-json';
 
 /**
  * HMR creates state inconsistencies, so we always reload the page.
+ * Skip this plugin in Tauri builds since there's no HMR server.
  * @type {import('vite').PluginOption} PluginOption
  */
 const alwaysFullReload = {
   name: 'always-full-reload',
+  apply: 'serve',
   handleHotUpdate({ server }) {
     server.ws.send({ type: 'full-reload' });
     return [];
@@ -33,6 +35,10 @@ export default defineConfig({
   envPrefix: 'MERMAID_',
   server: { port: 3000, host: true },
   preview: { port: 3000, host: true },
+  // Tauri requires deterministic asset paths
+  build: {
+    target: 'esnext'
+  },
   // Vitest otherwise resolves Svelte's server build, where $effect is a no-op.
   resolve: process.env.VITEST ? { conditions: ['browser'] } : undefined,
   test: {
