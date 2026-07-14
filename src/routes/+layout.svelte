@@ -2,6 +2,7 @@
   import { Toaster } from '$/components/ui/sonner/index.js';
   import { loadingState } from '$/util/loading.svelte';
   import { toggleDarkTheme } from '$/util/state.svelte';
+  import { isTauri } from '$/util/tauri';
   import { initHandler } from '$/util/util';
   import { base } from '$app/paths';
   import { mode, ModeWatcher } from 'mode-watcher';
@@ -20,6 +21,26 @@
     window.addEventListener('hashchange', () => {
       void initHandler();
     });
+
+    // Tauri's WebView2 may not natively handle mouse back/forward buttons
+    // (XButton1 / XButton2). Listen for mousedown events and trigger history
+    // navigation manually so hardware navigation buttons work.
+    // MouseEvent.button: 0=left, 1=middle, 2=right, 3=back, 4=forward.
+    if (isTauri()) {
+      const handleMouseNav = (e: MouseEvent) => {
+        if (e.button === 3) {
+          e.preventDefault();
+          e.stopPropagation();
+          history.back();
+        } else if (e.button === 4) {
+          e.preventDefault();
+          e.stopPropagation();
+          history.forward();
+        }
+      };
+      // Use capture phase so we intercept before any child element handlers.
+      window.addEventListener('mousedown', handleMouseNav, true);
+    }
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker

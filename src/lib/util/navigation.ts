@@ -28,7 +28,7 @@ const isInternalUrl = (url: string): boolean => {
  */
 export const openUrl = (url: string): void => {
   if (isInternalUrl(url)) {
-    window.location.assign(url);
+    window.location.href = url;
   } else if (isTauri()) {
     // In Tauri, external URLs open in the system browser.
     // The tauri-plugin-opener intercepts window.open with _blank.
