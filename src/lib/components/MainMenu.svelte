@@ -3,8 +3,11 @@
   import * as Popover from '$/components/ui/popover';
   import { Switch } from '$/components/ui/switch';
   import { env } from '$/util/env';
-  import { urls } from '$/util/state.svelte';
+  import { updateCode } from '$/util/state.svelte';
   import { logMermaidChartClick } from '$/util/stats';
+  import { isTauri, pickMermaidFile } from '$/util/tauri';
+  import { urls } from '$/util/state.svelte';
+  import { notify } from '$/util/notify';
   import { cn } from '$/utils';
   import { mode, setMode } from 'mode-watcher';
   import type { Component, Snippet } from 'svelte';
@@ -14,6 +17,7 @@
   import DuplicateIcon from '~icons/material-symbols/content-copy-outline-rounded';
   import ContrastIcon from '~icons/material-symbols/contrast';
   import PluginIcon from '~icons/material-symbols/electrical-services-rounded';
+  import FileOpenIcon from '~icons/material-symbols/file-open-rounded';
   import MenuIcon from '~icons/material-symbols/menu-rounded';
   import CommunityIcon from '~icons/material-symbols/person-play-outline-rounded';
   import PlaygroundIcon from '~icons/material-symbols/shape-line-outline';
@@ -31,7 +35,36 @@
     renderer: Snippet<[Omit<MenuItem, 'renderer'>]>;
   }
 
+  // In the desktop (Tauri) build, allow the user to open a .mmd file from disk.
+  // In the browser build, this option is hidden because no native picker exists.
+  const showOpenFile = isTauri();
+
+  const handleOpenFile = async (): Promise<void> => {
+    try {
+      const file = await pickMermaidFile();
+      if (file) {
+        updateCode(file.content, { resetPanZoom: true });
+      }
+    } catch (error) {
+      console.error('Failed to open file:', error);
+      notify(`Failed to open file: ${(error as Error).message ?? String(error)}`);
+    }
+  };
+
   const menuItems: MenuItem[] = $derived([
+    ...(showOpenFile
+      ? [
+          {
+            label: 'Open',
+            icon: FileOpenIcon,
+            href: '#',
+            onclick: () => {
+              void handleOpenFile();
+            },
+            renderer: openFileMenuItem
+          } satisfies MenuItem
+        ]
+      : []),
     { label: 'New', icon: AddIcon, href: urls.current.new, renderer: menuItem },
     { label: 'Duplicate', icon: DuplicateIcon, href: window.location.href, renderer: menuItem },
     {
@@ -102,6 +135,32 @@
     <options.icon class="size-5" />
     {options.label}
   </a>
+{/snippet}
+
+{#snippet openFileMenuItem(options: Omit<MenuItem, 'renderer'>)}
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <div
+    role="button"
+    tabindex="0"
+    onclick={(event) => {
+      event.preventDefault();
+      options.onclick?.();
+    }}
+    onkeydown={(event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        options.onclick?.();
+      }
+    }}
+    class={cn(
+      'flex cursor-pointer items-center justify-start gap-2 border-b-2 p-2 px-3 hover:bg-muted',
+      options.isSectionEnd && 'border-border-dark',
+      options.class
+    )}>
+    <options.icon class="size-5" />
+    {options.label}
+  </div>
 {/snippet}
 
 {#snippet mcMenuItem(item: Omit<MenuItem, 'renderer'>)}

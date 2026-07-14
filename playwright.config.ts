@@ -13,7 +13,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   testDir: './tests',
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://localhost:31551',
     browserName: 'chromium',
     permissions: ['clipboard-read', 'clipboard-write'],
     trace: 'retain-on-failure',
@@ -21,7 +21,7 @@ export default defineConfig({
   },
   webServer: {
     command: `pnpm ${process.env.CI ? 'preview' : 'dev'}`,
-    url: 'http://localhost:3000',
+    url: 'http://localhost:31551',
     reuseExistingServer: !process.env.CI
   },
   workers: process.env.CI ? 3 : undefined

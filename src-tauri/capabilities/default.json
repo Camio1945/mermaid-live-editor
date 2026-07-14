@@ -3,8 +3,5 @@
   "identifier": "default",
   "description": "Default capability for Mermaid Live Editor",
   "windows": ["main"],
-  "permissions": [
-    "core:default",
-    "opener:default"
-  ]
+  "permissions": ["core:default", "opener:default", "dialog:default"]
 }

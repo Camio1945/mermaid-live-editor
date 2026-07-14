@@ -33,8 +33,8 @@ export default defineConfig({
     devtoolsJson()
   ],
   envPrefix: 'MERMAID_',
-  server: { port: 3000, host: true },
-  preview: { port: 3000, host: true },
+  server: { port: 31551, host: true },
+  preview: { port: 31551, host: true },
   // Tauri requires deterministic asset paths
   build: {
     target: 'esnext'

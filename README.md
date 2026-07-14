@@ -69,7 +69,7 @@ if you wish.
 docker compose up --build
 ```
 
-Then open http://localhost:3000
+Then open http://localhost:31551
 
 ### Building and running images locally
 

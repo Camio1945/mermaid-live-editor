@@ -3,16 +3,16 @@
 ## Common Commands
 
 - **Install dependencies**: `pnpm install` (requires Node >= 24.16.0; enable pnpm via `corepack enable pnpm`)
-- **Dev server**: `pnpm dev -- --open` — starts Vite dev server on port 3000. Use `pnpm dev:force` to force optimization and use local mermaid package
+- **Dev server**: `pnpm dev -- --open` — starts Vite dev server on port 31551. Use `pnpm dev:force` to force optimization and use local mermaid package
 - **Build**: `pnpm build` — produces static output to `docs/`
-- **Preview build**: `pnpm preview` — serves the built `docs/` directory on port 3000
+- **Preview build**: `pnpm preview` — serves the built `docs/` directory on port 31551
 - **Lint**: `pnpm lint` (check only) or `pnpm lint:fix` (auto-fix). Runs Prettier + ESLint
 - **Format**: `pnpm format` — runs Prettier write on all files
 - **Type check**: `pnpm check` — runs `svelte-kit sync` then `svelte-check`
 - **Unit tests**: `pnpm test:unit` — runs Vitest in jsdom. Use `pnpm test:unit:ui` for UI mode, `pnpm test:unit:coverage` for coverage
 - **E2E tests**: `pnpm test:e2e` — Playwright tests against `http://localhost:3000`. Use `pnpm test:e2e:ui` for interactive mode, `pnpm test:e2e:debug` for debugging
 - **Run all tests**: `pnpm test` (unit + e2e). E2E tests require the dev server to be running; Playwright auto-starts it via `webServer` config
-- **Docker dev**: `docker compose up --build` — builds and serves on port 3000 with hot-reload via volume mount
+- **Docker dev**: `docker compose up --build` — builds and serves on port 31551 with hot-reload via volume mount
 - **Run a single unit test file**: `pnpm vitest run src/lib/util/serde.test.ts` (or any test file path)
 - **Run a single E2E test**: `pnpm test:e2e -- tests/loadSite.spec.ts` or filter by test name with `--grep "test name"`
 

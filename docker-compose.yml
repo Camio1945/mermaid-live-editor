@@ -7,5 +7,5 @@ services:
     volumes:
       - ./src:/app/src
     ports:
-      - 3000:3000
+      - 31551:31551
       - 24678:24678
