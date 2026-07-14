@@ -16,3 +16,6 @@
 /blob-report/
 /playwright/.cache/
 .playwright-mcp/
+
+**/target
+

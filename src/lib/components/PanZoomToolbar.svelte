@@ -3,6 +3,7 @@
   import { Button } from '$/components/ui/button';
   import { Separator } from '$/components/ui/separator';
   import type { PanZoomState } from '$/util/panZoom';
+  import { openUrl } from '$/util/navigation';
   import { urls } from '$/util/state.svelte';
   import ExpandIcon from '~icons/material-symbols/open-in-full-rounded';
   import ArrowsToCircleIcon from '~icons/material-symbols/screenshot-frame-2';
@@ -10,6 +11,10 @@
   import MagnifyingGlassMinusIcon from '~icons/material-symbols/zoom-out';
 
   let { panZoomState }: { panZoomState: PanZoomState } = $props();
+
+  const handleFullScreen = () => {
+    openUrl(urls.current.view);
+  };
 </script>
 
 <FloatingToolbar>
@@ -28,7 +33,7 @@
     <MagnifyingGlassPlusIcon />
   </Button>
   <Separator orientation="vertical" class="hidden sm:block" />
-  <Button variant="ghost" size="icon" title="Full Screen" href={urls.current.view} target="_blank">
+  <Button variant="ghost" size="icon" title="Full Screen" onclick={handleFullScreen}>
     <ExpandIcon />
   </Button>
 </FloatingToolbar>

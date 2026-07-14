@@ -6,6 +6,7 @@
   import { updateCode } from '$/util/state.svelte';
   import { logMermaidChartClick } from '$/util/stats';
   import { isTauri, pickMermaidFile } from '$/util/tauri';
+  import { openUrl } from '$/util/navigation';
   import { urls } from '$/util/state.svelte';
   import { notify } from '$/util/notify';
   import { cn } from '$/utils';
@@ -123,18 +124,31 @@
 </script>
 
 {#snippet menuItem(options: Omit<MenuItem, 'renderer'>)}
-  <a
-    href={options.href}
-    target="_blank"
-    onclick={options.onclick}
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <div
+    role="button"
+    tabindex="0"
+    onclick={(event) => {
+      event.preventDefault();
+      options.onclick?.();
+      openUrl(options.href);
+    }}
+    onkeydown={(event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        options.onclick?.();
+        openUrl(options.href);
+      }
+    }}
     class={cn(
-      'flex items-center justify-start gap-2 border-b-2 p-2 px-3 hover:bg-muted',
+      'flex cursor-pointer items-center justify-start gap-2 border-b-2 p-2 px-3 hover:bg-muted',
       options.isSectionEnd && 'border-border-dark',
       options.class
     )}>
     <options.icon class="size-5" />
     {options.label}
-  </a>
+  </div>
 {/snippet}
 
 {#snippet openFileMenuItem(options: Omit<MenuItem, 'renderer'>)}

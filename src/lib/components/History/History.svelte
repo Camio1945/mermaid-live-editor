@@ -2,6 +2,7 @@
   import Card from '$lib/components/Card/Card.svelte';
   import type { HistoryEntry, HistoryType, State, Tab } from '$lib/types';
   import { notify, prompt } from '$lib/util/notify';
+  import { openUrl as navigateToUrl } from '$lib/util/navigation';
   import { serializeState } from '$lib/util/serde';
   import { inputState, replaceInputState } from '$lib/util/state.svelte';
   import { logEvent } from '$lib/util/stats';
@@ -154,11 +155,19 @@
           <div class="flex items-center justify-between">
             <div class="flex flex-col">
               {#if url}
-                <a
-                  href={url}
-                  target="_blank"
-                  title="Open revision in new tab"
-                  class="text-blue-500 hover:underline">{name}</a>
+                <!-- svelte-ignore a11y_click_events_have_key_events -->
+                <!-- svelte-ignore a11y_no_static_element_interactions -->
+                <span
+                  role="button"
+                  tabindex="0"
+                  onclick={() => navigateToUrl(url)}
+                  onkeydown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      navigateToUrl(url);
+                    }
+                  }}
+                  title="Open revision"
+                  class="text-blue-500 hover:underline cursor-pointer">{name}</span>
               {:else}
                 <span class="whitespace-nowrap">{name}</span>
               {/if}
@@ -172,12 +181,10 @@
                 {dayjs(time).fromNow()}
               </span>
               <Button
-                href={openUrl}
-                target="_blank"
-                rel="noopener"
                 size="icon"
                 variant="ghost"
-                title="Open in new tab">
+                title="Open in new tab"
+                onclick={() => navigateToUrl(openUrl)}>
                 <OpenInNewIcon />
               </Button>
               <Button

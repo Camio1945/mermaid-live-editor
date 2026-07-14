@@ -12,11 +12,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ae262b35-fc93-4ed6-af60-5d750de6bc93" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/util/util.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/util/util.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/svelte.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/svelte.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vite.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/vite.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/components/DropdownNavMenu.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/components/DropdownNavMenu.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/components/History/History.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/components/History/History.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/components/MainMenu.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/components/MainMenu.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/components/PanZoomToolbar.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/components/PanZoomToolbar.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/components/migration/editorChooserActions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/components/migration/editorChooserActions.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/history.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/history.spec.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,19 +47,29 @@
   &quot;keyToString&quot;: {
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.rust.reset.selective.auto.import&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/git/miscellaneous/mermaid-live-editor/docs&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;pnpm&quot;,
     &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
+    &quot;org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon&quot;: &quot;&quot;,
     &quot;org.rust.first.attach.projects&quot;: &quot;true&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.IDE.editor.colors.Rainbow Brackets&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\git\miscellaneous\mermaid-live-editor\docs" />
+    </key>
+  </component>
   <component name="RunManager" selected="Cargo.Run mermaid-live-editor">
     <configuration default="true" type="Applet">
       <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
@@ -154,6 +166,8 @@
       <updated>1783065980205</updated>
       <workItem from="1783065981210" duration="2040000" />
       <workItem from="1783228572196" duration="1093000" />
+      <workItem from="1783998782489" duration="4378000" />
+      <workItem from="1784012637539" duration="875000" />
     </task>
     <servers />
   </component>

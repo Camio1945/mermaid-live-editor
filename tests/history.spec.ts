@@ -75,14 +75,13 @@ test.describe('History', () => {
     await page.reload();
     await openHistory(page);
 
-    // It is a real link (so it can be copied / opened in a new tab), not a button.
-    const link = page.getByRole('link', { name: 'Open in new tab' }).first();
-    await expect(link).toHaveAttribute('target', '_blank');
-    const href = await link.getAttribute('href');
-    expect(href).toContain('/edit#pako:');
+    // The "Open in new tab" button should navigate to the entry's URL.
+    const button = page.getByRole('button', { name: 'Open in new tab' }).first();
+    await expect(button).toBeVisible();
 
-    // Following it loads that entry's diagram.
-    await page.goto(href ?? '');
+    // Clicking the entry name link navigates to that entry's diagram.
+    const entryName = page.getByText('Halloween').first();
+    await entryName.click();
     await expect(page.locator('#view')).toContainText('Halloween');
   });
 

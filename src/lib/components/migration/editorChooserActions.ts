@@ -1,3 +1,4 @@
+import { openUrl } from '$/util/navigation';
 import { logEvent, logMermaidChartClick } from '$/util/stats';
 import { getCheckoutUrl, getMermaidAiLiveUrl } from '$/util/util';
 
@@ -20,7 +21,7 @@ export const createEditorChooserActions = (close: () => void): EditorChooserActi
     log(buttonClick);
     logMermaidChartClick('editorPicker');
     close();
-    window.open(getCheckoutUrl({ utmCampaign, utmMedium }), '_blank', 'noopener');
+    openUrl(getCheckoutUrl({ utmCampaign, utmMedium }));
   };
 
   const dismiss = (buttonClick: string) => {
@@ -31,7 +32,7 @@ export const createEditorChooserActions = (close: () => void): EditorChooserActi
   const openMermaidAiLive = (buttonClick: string) => {
     log(buttonClick);
     close();
-    window.open(getMermaidAiLiveUrl({ utmCampaign, utmMedium }), '_blank', 'noopener');
+    openUrl(getMermaidAiLiveUrl({ utmCampaign, utmMedium }));
   };
 
   return { log, startTrial, dismiss, openMermaidAiLive };

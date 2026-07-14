@@ -28,6 +28,7 @@
             tabindex="0"
             class="whitespace-nowrap underline"
             target="_blank"
+            rel="noopener noreferrer"
             {href}>
             {title}
           </a>
