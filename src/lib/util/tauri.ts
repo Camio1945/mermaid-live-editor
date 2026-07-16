@@ -71,3 +71,29 @@ export const listenForFileOpen = (
   };
   return cleanup;
 };
+
+/**
+ * Check if a CLI file was passed at startup (before the frontend listener
+ * was registered) by calling the `get_cli_file` IPC command.
+ * This avoids the race condition where the Rust `file-opened` event is
+ * emitted during the setup hook before the frontend can listen for it.
+ *
+ * The Rust side stores the CLI file in managed state and returns it once;
+ * subsequent calls return `null`.
+ */
+export const checkForCliFile = async (
+  onFileOpen: (path: string, content: string) => void
+): Promise<void> => {
+  if (!isTauri()) {
+    return;
+  }
+  try {
+    const payload = await invoke<FileOpenedPayload | null>('get_cli_file');
+    if (payload) {
+      console.log('[Tauri] CLI file detected:', payload.path);
+      onFileOpen(payload.path, payload.content);
+    }
+  } catch (err) {
+    console.error('[Tauri] Failed to check for CLI file:', err);
+  }
+};

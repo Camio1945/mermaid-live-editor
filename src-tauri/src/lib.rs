@@ -1,7 +1,14 @@
 use std::fs;
 use std::path::PathBuf;
+use std::sync::Mutex;
 use tauri::Emitter;
 use tauri::Manager;
+
+/// Stores the CLI file path/content so the frontend can retrieve it
+/// via IPC after it has registered its event listeners.
+struct CliFileState {
+    payload: Option<serde_json::Value>,
+}
 
 /// Read the contents of a .mmd file from the given path.
 #[tauri::command]
@@ -13,9 +20,30 @@ fn read_mmd_file(path: String) -> Result<String, String> {
     fs::read_to_string(&file_path).map_err(|e| format!("Failed to read file: {}", e))
 }
 
-/// Try to read the first .mmd/.mermaid file passed via command-line arguments
-/// and emit a `file-opened` event with its contents.
-fn try_emit_cli_file(window: &tauri::WebviewWindow) {
+/// IPC command: returns the CLI file payload if one was passed on startup,
+/// then clears it so it's only consumed once.
+#[tauri::command]
+fn get_cli_file(state: tauri::State<'_, Mutex<CliFileState>>) -> Option<serde_json::Value> {
+    let mut guard = state.lock().unwrap();
+    guard.payload.take()
+}
+
+/// Read the first .mmd/.mermaid file passed via command-line arguments and
+/// store it in managed state so the frontend can retrieve it via `get_cli_file`.
+fn capture_cli_file(state: &Mutex<CliFileState>) {
+    if let Some(file_path) = std::env::args().nth(1) {
+        if let Ok(content) = fs::read_to_string(&file_path) {
+            let mut guard = state.lock().unwrap();
+            guard.payload = Some(serde_json::json!({
+                "path": file_path,
+                "content": content
+            }));
+        }
+    }
+}
+
+/// Emit the file-opened event for a CLI-provided file path.
+fn emit_cli_file(window: &tauri::WebviewWindow) {
     if let Some(file_path) = std::env::args().nth(1) {
         if let Ok(content) = fs::read_to_string(&file_path) {
             let _ = window.emit(
@@ -29,6 +57,36 @@ fn try_emit_cli_file(window: &tauri::WebviewWindow) {
     }
 }
 
+/// Check whether a path has a .mmd or .mermaid extension.
+fn has_mermaid_extension(path: &std::path::Path) -> bool {
+    path.extension()
+        .and_then(|e| e.to_str())
+        .map(|e| {
+            let lower = e.to_lowercase();
+            lower == "mmd" || lower == "mermaid"
+        })
+        .unwrap_or(false)
+}
+
+/// Process drag-and-drop paths: emit file-opened for the first valid mermaid file.
+fn handle_drag_drop(window: &tauri::WebviewWindow, paths: &[std::path::PathBuf]) {
+    for path in paths {
+        if !has_mermaid_extension(path) {
+            continue;
+        }
+        if let Ok(content) = fs::read_to_string(path) {
+            let _ = window.emit(
+                "file-opened",
+                serde_json::json!({
+                    "path": path.to_string_lossy(),
+                    "content": content
+                }),
+            );
+            break; // Only handle the first valid file
+        }
+    }
+}
+
 /// Listen for file-open events (e.g. double-clicking .mmd in Explorer, or
 /// dragging a .mmd file onto the app window). When the app receives a file
 /// path via deep link, command line, or drag-drop, we emit the file content
@@ -37,44 +95,21 @@ fn setup_file_open_handler(app: &tauri::App) {
     let window = app.get_webview_window("main").unwrap();
     let window_clone = window.clone();
 
-    // Handle file paths passed via command-line arguments on startup.
-    try_emit_cli_file(&window);
+    // Store CLI file in managed state so the frontend can retrieve it after
+    // its event listeners are registered (avoids race condition).
+    let state = app.state::<Mutex<CliFileState>>();
+    capture_cli_file(&state);
 
-    // Listen for drag-and-drop events on the main window. Tauri 2 exposes
-    // drag-drop events via the window event system; we filter for paths
-    // pointing to a .mmd or .mermaid file and emit `file-opened`.
+    // Also try to emit immediately for cases where the frontend listener
+    // might already be registered (e.g. hot-reload during dev).
+    emit_cli_file(&window);
+
+    // Listen for drag-and-drop events on the main window.
     let window_for_drag = window_clone.clone();
     window.on_window_event(move |event| {
-        if let tauri::WindowEvent::DragDrop(tauri::DragDropEvent::Drop {
-            paths, ..
-        }) = event
-        {
-            for path in paths {
-                let path_buf = PathBuf::from(path);
-                // Check the file extension; only .mmd / .mermaid are supported.
-                let is_mermaid = path_buf
-                    .extension()
-                    .and_then(|e| e.to_str())
-                    .map(|e| {
-                        let lower = e.to_lowercase();
-                        lower == "mmd" || lower == "mermaid"
-                    })
-                    .unwrap_or(false);
-                if !is_mermaid {
-                    continue;
-                }
-                if let Ok(content) = fs::read_to_string(&path_buf) {
-                    let _ = window_for_drag.emit(
-                        "file-opened",
-                        serde_json::json!({
-                            "path": path_buf.to_string_lossy(),
-                            "content": content
-                        }),
-                    );
-                    // Only handle the first valid file in the drop.
-                    break;
-                }
-            }
+        if let tauri::WindowEvent::DragDrop(tauri::DragDropEvent::Drop { paths, .. }) = event {
+            let path_bufs: Vec<PathBuf> = paths.iter().map(PathBuf::from).collect();
+            handle_drag_drop(&window_for_drag, &path_bufs);
         }
     });
 }
@@ -84,11 +119,12 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
+        .manage(Mutex::new(CliFileState { payload: None }))
         .setup(|app| {
             setup_file_open_handler(app);
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![read_mmd_file])
+        .invoke_handler(tauri::generate_handler![read_mmd_file, get_cli_file])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

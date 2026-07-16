@@ -7,7 +7,7 @@
     "frontendDist": "../docs",
     "devUrl": "http://localhost:31551",
     "beforeDevCommand": "pnpm dev",
-    "beforeBuildCommand": "pnpm build"
+    "beforeBuildCommand": "pnpm build && pnpm build:cli"
   },
   "app": {
     "windows": [
@@ -45,6 +45,9 @@
         "role": "Editor"
       }
     ],
+    "resources": {
+      "../bin/cli-bundle.mjs": "cli.mjs"
+    },
     "windows": {
       "wix": {
         "language": "en-US"

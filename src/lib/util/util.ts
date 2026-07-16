@@ -1,12 +1,14 @@
+import { resolve } from '$app/paths';
 import { C } from '$/constants';
 import { env } from './env';
 import { loadDataFromUrl } from './fileLoaders/loader';
 import { initLoading } from './loading.svelte';
 import { isOnMermaidAI } from './migration/domainMigration';
 import { applyMigrations } from './migrations.svelte';
-import { initURLSubscription, loadState, updateCode, updateCodeStore, verifyState } from './state.svelte';
+import { serializeState } from './serde';
+import { defaultState, initURLSubscription, loadState, updateCode, updateCodeStore, verifyState } from './state.svelte';
 import { getAnalyticsSafeUrl, initAnalytics, plausible } from './stats';
-import { isTauri, listenForFileOpen } from './tauri';
+import { isTauri, listenForFileOpen, checkForCliFile } from './tauri';
 
 export const getDomain = (url?: string): string => {
   if (!url) return '';
@@ -29,10 +31,25 @@ export const initHandler = async (): Promise<void> => {
 
   // In Tauri mode, check for file-open events on startup (for file association)
   if (isTauri()) {
-    // Listen for future file-open events (e.g. opening another .mmd while running)
-    listenForFileOpen((_path, content) => {
+    const handleFileOpen = (_path: string, content: string) => {
       updateCode(content, { resetPanZoom: true });
-    });
+      // Navigate to full-screen view after opening a .mmd file
+      const serialized = serializeState({
+        ...defaultState,
+        code: content,
+        pan: undefined,
+        zoom: undefined
+      });
+      window.location.href = `${resolve('/view', {})}#${serialized}`;
+    };
+
+    // Listen for future file-open events (e.g. opening another .mmd while running)
+    listenForFileOpen(handleFileOpen);
+
+    // Check for CLI file that may have been passed before the listener was ready.
+    // This fixes the race condition where the Rust backend emits the file-opened
+    // event in the setup hook before the frontend listener is registered.
+    checkForCliFile(handleFileOpen);
   }
 
   loadStateFromURL();
