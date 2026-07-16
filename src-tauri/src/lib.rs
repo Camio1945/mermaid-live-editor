@@ -37,8 +37,7 @@ fn list_mmd_files(path: String) -> Result<Vec<MmdFileEntry>, String> {
         .ok_or_else(|| format!("Cannot determine parent directory: {}", path))?;
 
     let mut entries: Vec<MmdFileEntry> = Vec::new();
-    let read_dir =
-        fs::read_dir(dir).map_err(|e| format!("Failed to read directory: {}", e))?;
+    let read_dir = fs::read_dir(dir).map_err(|e| format!("Failed to read directory: {}", e))?;
 
     for entry in read_dir {
         let entry = match entry {
@@ -173,7 +172,11 @@ pub fn run() {
             setup_file_open_handler(app);
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![read_mmd_file, get_cli_file, list_mmd_files])
+        .invoke_handler(tauri::generate_handler![
+            read_mmd_file,
+            get_cli_file,
+            list_mmd_files
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

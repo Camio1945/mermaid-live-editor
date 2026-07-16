@@ -12,14 +12,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ae262b35-fc93-4ed6-af60-5d750de6bc93" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/out.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src-tauri/capabilities/default.json" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/capabilities/default.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src-tauri/gen/schemas/capabilities.json" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/gen/schemas/capabilities.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src-tauri/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/src/lib.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src-tauri/tauri.conf.json" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/tauri.conf.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/util/tauri.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/util/tauri.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/util/util.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/util/util.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/routes/view/+page.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/view/+page.svelte" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
