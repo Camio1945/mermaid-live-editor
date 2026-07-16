@@ -20,6 +20,55 @@ fn read_mmd_file(path: String) -> Result<String, String> {
     fs::read_to_string(&file_path).map_err(|e| format!("Failed to read file: {}", e))
 }
 
+/// Result item for list_mmd_files: a sibling .mmd file in the same folder.
+#[derive(serde::Serialize)]
+struct MmdFileEntry {
+    name: String,
+    path: String,
+    stem: String,
+}
+
+/// List all .mmd/.mermaid files in the same directory as the given file path.
+#[tauri::command]
+fn list_mmd_files(path: String) -> Result<Vec<MmdFileEntry>, String> {
+    let file_path = PathBuf::from(&path);
+    let dir = file_path
+        .parent()
+        .ok_or_else(|| format!("Cannot determine parent directory: {}", path))?;
+
+    let mut entries: Vec<MmdFileEntry> = Vec::new();
+    let read_dir =
+        fs::read_dir(dir).map_err(|e| format!("Failed to read directory: {}", e))?;
+
+    for entry in read_dir {
+        let entry = match entry {
+            Ok(e) => e,
+            Err(_) => continue,
+        };
+        let entry_path = entry.path();
+        if !has_mermaid_extension(&entry_path) {
+            continue;
+        }
+        let name = entry_path
+            .file_name()
+            .map(|n| n.to_string_lossy().to_string())
+            .unwrap_or_default();
+        let stem = entry_path
+            .file_stem()
+            .map(|s| s.to_string_lossy().to_string())
+            .unwrap_or_default();
+        entries.push(MmdFileEntry {
+            path: entry_path.to_string_lossy().to_string(),
+            name,
+            stem,
+        });
+    }
+
+    // Sort by name for a stable, predictable order
+    entries.sort_by(|a, b| a.name.cmp(&b.name));
+    Ok(entries)
+}
+
 /// IPC command: returns the CLI file payload if one was passed on startup,
 /// then clears it so it's only consumed once.
 #[tauri::command]
@@ -124,7 +173,7 @@ pub fn run() {
             setup_file_open_handler(app);
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![read_mmd_file, get_cli_file])
+        .invoke_handler(tauri::generate_handler![read_mmd_file, get_cli_file, list_mmd_files])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

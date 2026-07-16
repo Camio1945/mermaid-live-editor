@@ -97,3 +97,28 @@ export const checkForCliFile = async (
     console.error('[Tauri] Failed to check for CLI file:', err);
   }
 };
+
+/**
+ * A single .mmd/.mermaid file entry returned by the `list_mmd_files` IPC command.
+ */
+export interface MmdFileEntry {
+  name: string;
+  path: string;
+  stem: string;
+}
+
+/**
+ * List all .mmd/.mermaid files in the same directory as the given file path.
+ * Returns the entries sorted alphabetically by name.
+ */
+export const listMmdFiles = async (filePath: string): Promise<MmdFileEntry[]> => {
+  if (!isTauri()) {
+    return [];
+  }
+  try {
+    return await invoke<MmdFileEntry[]>('list_mmd_files', { path: filePath });
+  } catch (err) {
+    console.error('[Tauri] Failed to list mmd files:', err);
+    return [];
+  }
+};

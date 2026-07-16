@@ -12,19 +12,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ae262b35-fc93-4ed6-af60-5d750de6bc93" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/bin/build-cli.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bin/cli.mjs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src-tauri/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/Cargo.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src-tauri/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/capabilities/default.json" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/capabilities/default.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/gen/schemas/capabilities.json" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/gen/schemas/capabilities.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src-tauri/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/src/lib.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src-tauri/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/src/main.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src-tauri/tauri.conf.json" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/tauri.conf.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/util/panZoom.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/util/panZoom.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib/util/tauri.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/util/tauri.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib/util/util.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/util/util.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/view/+page.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/view/+page.svelte" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -175,7 +170,8 @@
       <workItem from="1783998782489" duration="4378000" />
       <workItem from="1784012637539" duration="5349000" />
       <workItem from="1784078039343" duration="3924000" />
-      <workItem from="1784165207072" duration="1548000" />
+      <workItem from="1784165207072" duration="2326000" />
+      <workItem from="1784185142595" duration="598000" />
     </task>
     <servers />
   </component>

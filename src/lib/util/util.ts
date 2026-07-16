@@ -31,16 +31,18 @@ export const initHandler = async (): Promise<void> => {
 
   // In Tauri mode, check for file-open events on startup (for file association)
   if (isTauri()) {
-    const handleFileOpen = (_path: string, content: string) => {
+    const handleFileOpen = (path: string, content: string) => {
       updateCode(content, { resetPanZoom: true });
-      // Navigate to full-screen view after opening a .mmd file
+      // Navigate to full-screen view after opening a .mmd file,
+      // passing the file path so the view page can list sibling files.
       const serialized = serializeState({
         ...defaultState,
         code: content,
         pan: undefined,
         zoom: undefined
       });
-      window.location.href = `${resolve('/view', {})}#${serialized}`;
+      const fileParam = encodeURIComponent(path);
+      window.location.href = `${resolve('/view', {})}?file=${fileParam}#${serialized}`;
     };
 
     // Listen for future file-open events (e.g. opening another .mmd while running)
