@@ -5,7 +5,33 @@
 
 Edit, preview and share mermaid charts/diagrams.
 
-## Features
+**Now available as a Tauri desktop application!** 🚀
+
+## Tauri Desktop App (New!)
+
+The Mermaid Live Editor is also available as a native desktop application built with [Tauri 2.0](https://tauri.app/). The same `.exe` binary works as both a GUI editor and a CLI validator.
+
+### Desktop Features
+
+- **Native file dialogs** — Open `.mmd` / `.mermaid` files directly from your filesystem
+- **Drag & drop** — Drag diagram files onto the window to open them instantly
+- **File association** — Double-click `.mmd` or `.mermaid` files to open them in the editor
+- **Sibling file navigation** — Browse all `.mmd` files in the same directory
+- **CLI validation mode** — Validate diagram syntax from the terminal: `mermaid-live-editor validate diagram.mmd`
+- **Offline capable** — All rendering happens locally, no internet required
+- **Cross-platform** — Windows, macOS, and Linux support
+
+### Running the Desktop App
+
+```bash
+# Development mode
+pnpm tauri:dev
+
+# Build for production
+pnpm tauri:build
+```
+
+## Web Features
 
 - Edit and preview flowcharts, sequence diagrams, gantt diagrams in real time.
 - Save the result as a svg
