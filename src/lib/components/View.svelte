@@ -75,6 +75,11 @@
           await waitForFontAwesomeToLoad?.();
         }
 
+        // Clear the old diagram immediately to avoid flicker, then show loading state
+        // eslint-disable-next-line svelte/no-dom-manipulating
+        container.innerHTML =
+          '<div class="loading-overlay"><div class="loading-spinner"></div></div>';
+
         const scroll = view?.parentElement?.scrollTop;
         delete container.dataset.processed;
         const viewID = uniqueID('graph-');
@@ -168,5 +173,28 @@
   .grid-bg-dark {
     background-size: 30px 30px;
     background-image: radial-gradient(circle, #46464646 2px, #0000 2px);
+  }
+
+  .loading-overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+  }
+
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(128, 128, 128, 0.2);
+    border-top-color: #6366f1;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 </style>
