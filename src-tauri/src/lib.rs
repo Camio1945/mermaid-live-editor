@@ -1,5 +1,6 @@
 use std::fs;
 use std::path::PathBuf;
+use std::process::Command;
 use std::sync::Mutex;
 use tauri::Emitter;
 use tauri::Manager;
@@ -74,6 +75,55 @@ fn list_mmd_files(path: String) -> Result<Vec<MmdFileEntry>, String> {
 fn get_cli_file(state: tauri::State<'_, Mutex<CliFileState>>) -> Option<serde_json::Value> {
     let mut guard = state.lock().unwrap();
     guard.payload.take()
+}
+
+/// Reveal the given file in the operating system's file manager,
+/// selecting (highlighting) the file.
+#[tauri::command]
+fn reveal_in_explorer(path: String) -> Result<(), String> {
+    let file_path = PathBuf::from(&path);
+    if !file_path.exists() {
+        return Err(format!("File not found: {}", path));
+    }
+    open_in_file_manager(&file_path)
+}
+
+/// Platform-specific: open the parent directory in the file manager
+/// and select (highlight) the given file.
+fn open_in_file_manager(file_path: &std::path::Path) -> Result<(), String> {
+    #[cfg(target_os = "windows")]
+    {
+        Command::new("explorer")
+            .arg("/select,")
+            .arg(file_path.to_string_lossy().as_ref())
+            .spawn()
+            .map_err(|e| format!("Failed to open Explorer: {}", e))?;
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        Command::new("open")
+            .arg("-R")
+            .arg(file_path.to_string_lossy().as_ref())
+            .spawn()
+            .map_err(|e| format!("Failed to open Finder: {}", e))?;
+    }
+
+    #[cfg(all(
+        target_os = "linux",
+        not(target_os = "macos"),
+        not(target_os = "windows")
+    ))]
+    {
+        if let Some(parent) = file_path.parent() {
+            Command::new("xdg-open")
+                .arg(parent)
+                .spawn()
+                .map_err(|e| format!("Failed to open file manager: {}", e))?;
+        }
+    }
+
+    Ok(())
 }
 
 /// Read the first .mmd/.mermaid file passed via command-line arguments and
@@ -175,7 +225,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             read_mmd_file,
             get_cli_file,
-            list_mmd_files
+            list_mmd_files,
+            reveal_in_explorer
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

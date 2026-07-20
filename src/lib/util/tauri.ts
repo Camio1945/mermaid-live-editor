@@ -122,3 +122,19 @@ export const listMmdFiles = async (filePath: string): Promise<MmdFileEntry[]> =>
     return [];
   }
 };
+
+/**
+ * Reveal the given file in the operating system's file manager
+ * (e.g. File Explorer on Windows, Finder on macOS),
+ * selecting (highlighting) the file.
+ */
+export const revealInExplorer = async (filePath: string): Promise<void> => {
+  if (!isTauri()) {
+    return;
+  }
+  try {
+    await invoke('reveal_in_explorer', { path: filePath });
+  } catch (err) {
+    console.error('[Tauri] Failed to reveal in explorer:', err);
+  }
+};

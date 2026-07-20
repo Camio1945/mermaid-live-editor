@@ -6,7 +6,7 @@
   import { PanZoomState } from '$/util/panZoom';
   import { serializeState } from '$/util/serde';
   import { defaultState } from '$/util/state.svelte';
-  import { isTauri, listMmdFiles, type MmdFileEntry } from '$/util/tauri';
+  import { isTauri, listMmdFiles, revealInExplorer, type MmdFileEntry } from '$/util/tauri';
   import { initHandler } from '$/util/util';
   import { invoke } from '@tauri-apps/api/core';
   import { onMount } from 'svelte';
@@ -73,14 +73,10 @@
     return result || stem;
   }
 
-  let commonPrefix = $derived(
-    findCommonPrefix(siblingFiles.map((f) => f.stem))
-  );
+  let commonPrefix = $derived(findCommonPrefix(siblingFiles.map((f) => f.stem)));
 
   let prefixDisplay = $derived(
-    commonPrefix
-      ? commonPrefix.replace(/[-_~]+/g, (m) => (m === '_' ? '_' : m))
-      : ''
+    commonPrefix ? commonPrefix.replace(/[-_~]+/g, (m) => (m === '_' ? '_' : m)) : ''
   );
 
   let treeItems = $derived(
@@ -111,7 +107,16 @@
       loadingFile = false;
     }
   }
+
+  function handleKeydown(e: KeyboardEvent) {
+    if (e.key === 'F12' && isTauri() && filePath) {
+      e.preventDefault();
+      void revealInExplorer(filePath);
+    }
+  }
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 <svelte:head>
   <meta name="robots" content="noindex" />
@@ -131,7 +136,9 @@
       <!-- Prefix header -->
       {#if prefixDisplay}
         <div class="shrink-0 px-3 pt-3 pb-1">
-          <p class="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide truncate" title={prefixDisplay}>
+          <p
+            class="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide truncate"
+            title={prefixDisplay}>
             {prefixDisplay}
           </p>
         </div>
@@ -146,13 +153,13 @@
             class:text-accent-foreground={item.path === filePath}
             class:text-muted-foreground={item.path !== filePath}
             onclick={() => openFile(item)}
-            title={item.name}
-          >
+            title={item.name}>
             <span class="shrink-0 text-muted-foreground/60">
               {#if item.path === filePath}
                 <span class="inline-block size-1.5 rounded-full bg-foreground/70"></span>
               {:else}
-                <span class="inline-block size-1.5 rounded-full border border-muted-foreground/40"></span>
+                <span class="inline-block size-1.5 rounded-full border border-muted-foreground/40"
+                ></span>
               {/if}
             </span>
             <span class="truncate">{item.display}</span>

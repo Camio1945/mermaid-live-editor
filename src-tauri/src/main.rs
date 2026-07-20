@@ -1,7 +1,7 @@
-// NOTE: We intentionally do NOT use `windows_subsystem = "windows"`.
-// Instead, we conditionally hide/show the console at runtime:
-// - CLI mode: console stays visible, stdout/stderr work normally
-// - GUI mode: we hide the console window after Tauri starts
+// NOTE: We use `windows_subsystem = "windows"` so that no console window
+// is ever created when launched via file association or double-click.
+// In CLI mode, we attach to the parent console so stdout/stderr work normally.
+#![windows_subsystem = "windows"]
 
 use std::env;
 use std::path::PathBuf;
@@ -10,39 +10,27 @@ use std::process::{self, Command};
 // ── Console helpers ──────────────────────────────────────────────────────────
 
 #[cfg(target_os = "windows")]
-#[allow(dead_code)] // hide() is only called in release builds (cfg(not(debug_assertions)))
 mod console {
-    // Use raw FFI to avoid needing extra windows-sys features
     extern "system" {
-        fn GetConsoleWindow() -> isize;
-        fn ShowWindow(hwnd: isize, nCmdShow: i32) -> i32;
-        fn FreeConsole() -> i32;
+        fn AttachConsole(dwProcessId: u32) -> i32;
     }
 
-    const SW_HIDE: i32 = 0;
+    const ATTACH_PARENT_PROCESS: u32 = u32::MAX; // 0xFFFFFFFF
 
-    /// Hide the console window (called in GUI mode after Tauri launches).
-    pub fn hide() {
+    /// Attach to the parent process console so CLI output (stdout/stderr) works.
+    /// Called early in CLI mode before any println!/eprintln!.
+    pub fn attach_to_parent() {
         unsafe {
-            let hwnd = GetConsoleWindow();
-            if hwnd != 0 {
-                ShowWindow(hwnd, SW_HIDE);
-            }
-        }
-    }
-
-    /// Free the console entirely.
-    pub fn detach() {
-        unsafe {
-            FreeConsole();
+            // AttachConsole returns 0 on failure — that's fine, it just means
+            // the parent has no console (e.g. launched from a GUI file manager).
+            AttachConsole(ATTACH_PARENT_PROCESS);
         }
     }
 }
 
 #[cfg(not(target_os = "windows"))]
 mod console {
-    pub fn hide() {}
-    pub fn detach() {}
+    pub fn attach_to_parent() {}
 }
 
 // ── Help ─────────────────────────────────────────────────────────────────────
@@ -154,6 +142,10 @@ fn extract_exe_name(args: &[String]) -> &str {
 }
 
 fn handle_cli_args(args: &[String]) {
+    // Attach to parent console so println!/eprintln! work when launched from a terminal.
+    // Has no effect when launched from a GUI (file association / double-click).
+    console::attach_to_parent();
+
     let first_arg = &args[1];
 
     // --help / -h
@@ -189,16 +181,6 @@ fn main() {
 
     if args.len() > 1 {
         handle_cli_args(&args);
-    }
-
-    // GUI mode: hide the console window after a short delay.
-    // This only matters in release builds — debug builds keep the console for logging.
-    #[cfg(not(debug_assertions))]
-    {
-        std::thread::spawn(|| {
-            std::thread::sleep(std::time::Duration::from_millis(500));
-            console::hide();
-        });
     }
 
     mermaid_live_editor_lib::run()
